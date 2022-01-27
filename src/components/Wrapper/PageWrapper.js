@@ -5,7 +5,7 @@ const PageWrapper = ({ children }) => (
   <div
     className={css`
       display: flex;
-      width: 100vw;
+      width: 100%;
       margin-left: auto;
       margin-right: auto;
       background-color: rightgrey;

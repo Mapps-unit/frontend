@@ -8,8 +8,8 @@ const headerWrapper = ({ children }) => (
       top: 0;
       z-index: 999;
       background-color: white;
-      minwidth: 1124px;
-      width: 100vw;
+      min-width: 1124px;
+      width: 100%;
       height: ${HEADER_HEIGHT};
       flex-direction: row;
       position: sticky;

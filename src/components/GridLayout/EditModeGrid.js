@@ -23,7 +23,17 @@ function EditModeGrid() {
     [widgets]
   );
 
+  function generateLayout() {
+    return {
+      x: 0,
+      y: 0,
+      w: 2,
+      h: 2,
+    };
+  }
+
   const layoutInfo = getVisibleWidgetsList(widgets.list);
+  const fullGrid = generateLayout();
 
   function renewWidgetsList(newItem) {
     const items = JSON.parse(JSON.stringify(widgets.list));
@@ -76,7 +86,17 @@ function EditModeGrid() {
     [layoutInfo]
   );
 
-  return <div style={{ position: 'relative' }}>{gridForm}</div>;
+  const backgroundGrid = useMemo(
+    () => <GridLayout mylayout={fullGrid} />,
+    [layoutInfo]
+  );
+
+  return (
+    <>
+      <div>{backgroundGrid}</div>
+      <div style={{ position: 'relative' }}>{gridForm}</div>
+    </>
+  );
 }
 
 export default EditModeGrid;
