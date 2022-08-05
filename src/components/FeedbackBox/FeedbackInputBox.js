@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState, useRef } from 'react';
-import { useMyInfo } from '../../hooks/myInfo';
+import { useSelector } from 'react-redux';
+// import { useMyInfo } from '../../hooks/myInfo';
 import useRequestAuth from '../../hooks/useRequestAuth';
 import { mainColor } from '../../styles/color';
 import { getApiEndpoint } from '../../utils/util';
@@ -17,7 +18,9 @@ function FeedbackInputBox(props) {
     middleText: '',
     bottomText: '',
   });
-  const { loggedIn } = useMyInfo();
+  const { myInfo } = useSelector((state) => ({
+    myInfo: state.info.user,
+  }));
   const userSeq = localStorage.getItem('user_seq');
   const endpoint = `${getApiEndpoint()}/feedback/register/${userSeq}`;
 
@@ -48,7 +51,7 @@ function FeedbackInputBox(props) {
   }
 
   function sendQnA() {
-    if (loggedIn) {
+    if (myInfo && myInfo.user_seq !== -1) {
       if (feedbackRef.current.value.length < 10) {
         // alert('10자 이상 작성해주셔야 합니다!')
         setPopUpText({

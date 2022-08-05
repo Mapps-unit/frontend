@@ -7,13 +7,14 @@ import { createReplacementUserAction } from '../redux/slice';
 export function useSaveMyInfo() {
   const dispatch = useDispatch();
 
-  const updateAll = ({ nickname, url, user_seq, field }) => {
+  const updateAll = ({ nickname, url, user_seq, field, profileImage }) => {
     dispatch(
       createReplacementUserAction({
         url,
         field,
         nickname,
         user_seq,
+        profileImage,
       })
     );
   };
@@ -74,5 +75,7 @@ export function useMyInfo() {
   return {
     loggedIn,
     myInfo,
+    res,
+    request,
   };
 }

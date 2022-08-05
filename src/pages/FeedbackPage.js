@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import FeedbackList from '../components/FeedbackBox/FeedbackList';
 import FeedbackInputBox from '../components/FeedbackBox/FeedbackInputBox';
 import MainSentence from '../components/FeedbackBox/MainSentence';
@@ -8,7 +9,7 @@ import { Header } from '../components';
 import useRequestAuth from '../hooks/useRequestAuth';
 import { getApiEndpoint, isError, urlOwnerNotFound } from '../utils/util';
 import MyfeedbackList from '../components/FeedbackBox/MyfeedbackList';
-import { useMyInfo } from '../hooks/myInfo';
+// import { useMyInfo } from '../hooks/myInfo';
 import { useRequest } from '../hooks/useRequest';
 
 function FeedbackPage() {
@@ -16,7 +17,10 @@ function FeedbackPage() {
   const [feedbacks, setFeedbacks] = useState(null);
   const [loading, setLoading] = useState(null);
   const [needReload, setNeedReload] = useState(false);
-  const { loggedIn, myInfo } = useMyInfo();
+  // const { loggedIn, myInfo } = useMyInfo();
+  const { myInfo } = useSelector((state) => ({
+    myInfo: state.info.user,
+  }));
 
   const endpoint = `${getApiEndpoint()}/feedback`;
   const { res: myFeedbacksRes, request: requestMyFeedbacks } = useRequestAuth({
@@ -34,9 +38,9 @@ function FeedbackPage() {
   };
 
   useEffect(() => {
-    if (loggedIn === false) requestFeedbacks();
-    else if (loggedIn === true) requestMyFeedbacks();
-  }, [loggedIn, needReload]);
+    if (!myInfo || myInfo.user_seq === -1) requestFeedbacks();
+    else if (myInfo && myInfo.user_seq !== -1) requestMyFeedbacks();
+  }, [myInfo, needReload]);
   useEffect(() => {
     if (feedbacksRes && feedbacksRes.data) {
       const { code, data, message } = feedbacksRes.data;
@@ -68,8 +72,10 @@ function FeedbackPage() {
   }, [myFeedbacksRes]);
 
   useEffect(() => {
-    if (loggedIn === true && myFeedbacks !== null) setLoading('loggedIn');
-    else if (loggedIn !== null && myFeedbacks !== null) setLoading('guest');
+    if (myInfo && myInfo.user_seq !== -1 && myFeedbacks !== null)
+      setLoading('loggedIn');
+    else if (!myInfo || (myInfo.user_seq === -1 && myFeedbacks !== null))
+      setLoading('guest');
   });
 
   return (

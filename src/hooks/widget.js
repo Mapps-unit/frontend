@@ -3,7 +3,7 @@ import { useHistory } from 'react-router';
 import { useEffect, useMemo, useState } from 'react';
 import { createReplacementWidgetsAction } from '../redux/slice';
 import { convertForRedux, convertForServer } from '../utils/convert';
-import { useMyInfo } from './myInfo';
+// import { useMyInfo } from './myInfo';
 import useRequestAuth from './useRequestAuth';
 import { getApiEndpoint } from '../utils/util';
 import {
@@ -96,9 +96,12 @@ export function useSaveWidgetsFromServer() {
 
 export function usePostData() {
   const history = useHistory();
-  const { myInfo } = useMyInfo();
+  // const { myInfo } = useMyInfo();
   const [postData, setPostData] = useState(null);
   const [pageUrl, setPageUrl] = useState('');
+  const { myInfo } = useSelector((state) => ({
+    myInfo: state.info.user,
+  }));
 
   const userSeq = useMemo(() => {
     if (myInfo) {

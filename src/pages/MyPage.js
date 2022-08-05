@@ -8,7 +8,7 @@ import AddPagePopUp from '../components/MyPage/AddPagePopUp';
 import EditPropfilePopUp from '../components/MyPage/EditProfilePopUp';
 import BindingPagePopUp from '../components/MyPage/BindingPopUp';
 import PageBlock from '../components/MyPage/PageBlock';
-import { useMyInfo } from '../hooks/myInfo';
+// import { useMyInfo } from '../hooks/myInfo';
 import { useRequest } from '../hooks/useRequest';
 import { useGetPersonalUrl } from '../hooks/useParamsUrl';
 import {
@@ -27,7 +27,7 @@ import Azone from '../components/MyPage/Azone';
 import { PAGE_MARGIN, PAGE_WIDTH } from '../styles/style';
 
 function MyPage() {
-  const { myInfo } = useMyInfo();
+  // const { myInfo } = useMyInfo();
   const history = useHistory();
   const pageUrl = useGetPersonalUrl();
   const [userSeq, setUserSeq] = useState(null);
@@ -38,10 +38,13 @@ function MyPage() {
   const [profilePopUp, setProfilePopUp] = useState(false);
   const [bindingPopUp, setBindingPopUp] = useState(false);
 
-  const { singlePagesState, multiPagesState } = useSelector((state) => ({
-    singlePagesState: state.info.singlePages,
-    multiPagesState: state.info.multiPages,
-  }));
+  const { myInfo, singlePagesState, multiPagesState } = useSelector(
+    (state) => ({
+      myInfo: state.info.user,
+      singlePagesState: state.info.singlePages,
+      multiPagesState: state.info.multiPages,
+    })
+  );
   const dispatch = useDispatch();
 
   const { res: pageUserRes, request: requestPageUserInfo } = useRequest({
@@ -61,38 +64,10 @@ function MyPage() {
     method: 'get',
   });
 
-  // 내 페이지인지 남의 페이지인지 확인 로직
+  // 해당 페이지 정보 가져옴 -> pageUserRes에 변화
   useEffect(() => {
-    // 로그인 유무
-    if (pageUrl) {
-      // 내 페이지일 경우
-      if (myInfo && urlMatched(myInfo.url, pageUrl)) {
-        setUserMatched(true);
-        setNickname(myInfo.nickname);
-        setUserUrl(myInfo.url);
-        if (userSeq) {
-          requestSinglePagesData();
-          requestMultiPagesData();
-        }
-        // 다른 사람 페이지일 경우
-      } else {
-        setUserMatched(false);
-        // 해당 페이지 정보 가져옴 -> pageUserRes에 변화
-        requestPageUserInfo();
-      }
-    }
-    return () => {
-      setUserMatched(null);
-      setNickname(null);
-    };
-  }, [
-    pageUrl,
-    myInfo,
-    userSeq,
-    requestPageUserInfo,
-    requestSinglePagesData,
-    requestMultiPagesData,
-  ]);
+    requestPageUserInfo();
+  }, []);
 
   // pageUserRes에 변화가 있으면 -> 데이터를 받아서 userseq, nickname 세팅.
   useEffect(() => {
@@ -114,6 +89,35 @@ function MyPage() {
       setNickname(null);
     };
   }, [pageUserRes, history]);
+
+  // 내 페이지인지 남의 페이지인지 확인 로직
+  useEffect(() => {
+    // 내 페이지일 경우
+    if (myInfo && urlMatched(myInfo.url, pageUrl)) {
+      setUserMatched(true);
+      setNickname(myInfo.nickname);
+      setUserUrl(myInfo.url);
+      if (userSeq) {
+        requestSinglePagesData();
+        requestMultiPagesData();
+      }
+      // 다른 사람 페이지일 경우
+    } else {
+      setUserMatched(false);
+    }
+    // }
+    return () => {
+      setUserMatched(null);
+      setNickname(null);
+    };
+  }, [
+    pageUrl,
+    myInfo,
+    userSeq,
+    requestPageUserInfo,
+    requestSinglePagesData,
+    requestMultiPagesData,
+  ]);
 
   // 바인딩 페이지용 싱글페이지 목록 데이터 리덕스에 저장
   useEffect(() => {
